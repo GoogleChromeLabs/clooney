@@ -11,6 +11,7 @@
  * limitations under the License.
  */
 import { Comlink } from 'comlink'; // eslint-disable-line no-unused-vars
+export { Comlink } from 'comlink';
 const thisScriptSrc = 'document' in self ? document.currentScript && document.currentScript.src : '';
 export class RoundRobinStrategy {
     constructor(opts = {}) {

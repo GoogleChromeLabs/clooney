@@ -11,6 +11,7 @@
  * limitations under the License.
  */
 import { Endpoint } from 'comlink';
+export { Comlink } from 'comlink';
 export declare type Actor = Object;
 export interface ClooneyWorker {
     spawn<T>(actor: Actor, opts: Object): Promise<T>;

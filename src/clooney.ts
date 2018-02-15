@@ -12,7 +12,9 @@
  */
 import {Comlink, Endpoint} from 'comlink'; // eslint-disable-line no-unused-vars
 
-const thisScriptSrc: string = 'document' in self ? document.currentScript! && (document.currentScript as HTMLScriptElement)!.src! : '';
+export {Comlink} from 'comlink';
+
+const thisScriptSrc: string = 'document' in self ? document.currentScript! && (document.currentScript as HTMLScriptElement).src : '';
 
 export type Actor = Object;
 

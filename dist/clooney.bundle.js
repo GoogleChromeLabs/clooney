@@ -391,6 +391,7 @@ if (isWorker())
 exports.RoundRobinStrategy = RoundRobinStrategy;
 exports.spawn = spawn;
 exports.makeWorker = makeWorker;
+exports.Comlink = Comlink;
 
 return exports;
 
