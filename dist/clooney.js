@@ -13,7 +13,7 @@
 import { Comlink } from 'comlink'; // eslint-disable-line no-unused-vars
 const thisScriptSrc = 'document' in self ? document.currentScript && document.currentScript.src : '';
 export class RoundRobinStrategy {
-    constructor(opts) {
+    constructor(opts = {}) {
         this._nextIndex = 0;
         this._options = Object.assign({}, RoundRobinStrategy.defaultOptions, opts);
         this._workers = new Array(this._options.maxNumWorkers).fill(null);
@@ -51,6 +51,10 @@ export class RoundRobinStrategy {
     get terminated() {
         return this._workers.length <= 0;
     }
+}
+const defaultStrategy = new RoundRobinStrategy();
+export async function spawn(actor, opts = {}) {
+    return defaultStrategy.spawn(actor, opts);
 }
 export function makeWorker(endpoint = self) {
     Comlink.expose({

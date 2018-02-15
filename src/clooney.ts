@@ -26,8 +26,8 @@ export interface Strategy {
 }
 
 export interface RoundRobinStrategyOptions {
-  workerFile: string;
-  maxNumWorkers: number;
+  workerFile?: string;
+  maxNumWorkers?: number;
 }
 
 export class RoundRobinStrategy implements Strategy {
@@ -42,7 +42,7 @@ export class RoundRobinStrategy implements Strategy {
     };
   }
 
-  constructor(opts: RoundRobinStrategyOptions) {
+  constructor(opts: RoundRobinStrategyOptions = {}) {
     this._options = {...RoundRobinStrategy.defaultOptions, ...opts};
     this._workers = new Array(this._options.maxNumWorkers).fill(null);
   }
@@ -51,7 +51,7 @@ export class RoundRobinStrategy implements Strategy {
     if (i >= this._workers.length)
       throw Error('No worker available');
     if (!this._workers[i]) {
-      const worker = new Worker(this._options.workerFile);
+      const worker = new Worker(this._options.workerFile!);
       this._workers[i] = [worker, Comlink.proxy(worker) as any as ClooneyWorker];
     }
     return this._workers[i][1];
@@ -59,7 +59,7 @@ export class RoundRobinStrategy implements Strategy {
 
   getWorker(opts: Object): Promise<ClooneyWorker> {
     const w = this._initOrGetWorker(this._nextIndex);
-    this._nextIndex = (this._nextIndex + 1) % this._options.maxNumWorkers;
+    this._nextIndex = (this._nextIndex + 1) % this._options.maxNumWorkers!;
     return Promise.resolve(w);
   }
 
@@ -78,6 +78,11 @@ export class RoundRobinStrategy implements Strategy {
   get terminated() {
     return this._workers.length <= 0;
   }
+}
+
+const defaultStrategy = new RoundRobinStrategy();
+export async function spawn<T>(actor: Actor, opts: Object = {}): Promise<T> {
+  return defaultStrategy.spawn<T>(actor, opts);
 }
 
 export function makeWorker(endpoint: Endpoint | Window = self): void {

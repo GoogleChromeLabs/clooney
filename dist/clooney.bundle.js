@@ -327,7 +327,7 @@ const Comlink = (function () {
  */
 const thisScriptSrc = 'document' in self ? document.currentScript && document.currentScript.src : '';
 class RoundRobinStrategy {
-    constructor(opts) {
+    constructor(opts = {}) {
         this._nextIndex = 0;
         this._options = Object.assign({}, RoundRobinStrategy.defaultOptions, opts);
         this._workers = new Array(this._options.maxNumWorkers).fill(null);
@@ -366,6 +366,10 @@ class RoundRobinStrategy {
         return this._workers.length <= 0;
     }
 }
+const defaultStrategy = new RoundRobinStrategy();
+async function spawn(actor, opts = {}) {
+    return defaultStrategy.spawn(actor, opts);
+}
 function makeWorker(endpoint = self) {
     Comlink.expose({
         async spawn(actorCode) {
@@ -385,6 +389,7 @@ if (isWorker())
     makeWorker();
 
 exports.RoundRobinStrategy = RoundRobinStrategy;
+exports.spawn = spawn;
 exports.makeWorker = makeWorker;
 
 return exports;

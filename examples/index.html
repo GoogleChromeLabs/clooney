@@ -1,0 +1,14 @@
+<script src="/dist/clooney.bundle.js"></script>
+<script>
+  async function main() {
+    class X{
+      log() {
+        console.log('hai');
+        return 4;
+      }
+    }
+    const x = await Clooney.spawn(X);
+    console.log(await x.log());
+  }
+  main();
+</script>
