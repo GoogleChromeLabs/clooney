@@ -47,11 +47,11 @@ export class RoundRobinStrategy {
         return this._workers.length <= 0;
     }
 }
-export function makeWorker() {
+export function makeWorker(endpoint = self) {
     Comlink.expose({
         async spawn(actorCode) {
             const actor = (new Function(`return ${actorCode};`))();
             return Comlink.proxyValue(new actor());
         }
-    }, self);
+    }, endpoint);
 }

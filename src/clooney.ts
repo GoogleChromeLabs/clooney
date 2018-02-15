@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Comlink} from 'comlink';
+import {Comlink, Endpoint} from 'comlink';
 
 export type Actor = Object;
 
@@ -24,9 +24,9 @@ export interface Strategy {
 };
 
 export class RoundRobinStrategy implements Strategy {
-  _workers: [Worker, ClooneyWorker][];
-  _workerFile: string;
-  _nextIndex: number = 0;
+  private _workers: [Worker, ClooneyWorker][];
+  private _workerFile: string;
+  private _nextIndex: number = 0;
 
   get numWorkers(): number {
     return navigator.hardwareConcurrency || 1;
@@ -37,7 +37,7 @@ export class RoundRobinStrategy implements Strategy {
     this._workers = new Array(this.numWorkers).fill(null);
   }
 
-  _initOrGetWorker(i: number): ClooneyWorker {
+  private _initOrGetWorker(i: number): ClooneyWorker {
     if (i >= this._workers.length)
       throw Error('No worker available');
     if(!this._workers[i]) {
@@ -54,6 +54,8 @@ export class RoundRobinStrategy implements Strategy {
     return Promise.resolve(w);
   }
 
+  // The return type is the class T where every method is async.
+  // Not sure if TypeScript can represent that somehow.
   async spawn<T>(actor: Actor, opts: Object = {}): Promise<T> {
     const worker = await this.getWorker(opts);
     return await worker.spawn(actor.toString(), opts) as T;
@@ -69,11 +71,11 @@ export class RoundRobinStrategy implements Strategy {
   }
 }
 
-export function makeWorker(): void {
+export function makeWorker(endpoint: Endpoint | Window = self): void {
   Comlink.expose({
     async spawn(actorCode: string): Promise<Actor> {
       const actor = (new Function(`return ${actorCode};`))();
       return Comlink.proxyValue(new actor()) as Actor;
     }
-  }, self);
+  }, endpoint);
 }

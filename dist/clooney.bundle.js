@@ -360,13 +360,13 @@ class RoundRobinStrategy {
         return this._workers.length <= 0;
     }
 }
-function makeWorker() {
+function makeWorker(endpoint = self) {
     Comlink.expose({
         async spawn(actorCode) {
             const actor = (new Function(`return ${actorCode};`))();
             return Comlink.proxyValue(new actor());
         }
-    }, self);
+    }, endpoint);
 }
 
 exports.RoundRobinStrategy = RoundRobinStrategy;
