@@ -23,7 +23,6 @@ export interface Strategy {
   terminate(): Promise<void>;
 };
 
-
 export class RoundRobinStrategy implements Strategy {
   _workers: [Worker, ClooneyWorker][];
   _workerFile: string;
@@ -55,9 +54,9 @@ export class RoundRobinStrategy implements Strategy {
     return Promise.resolve(w);
   }
 
-  async spawn(actor: Actor, opts: Object = {}): Promise<Actor> {
+  async spawn<T>(actor: Actor, opts: Object = {}): Promise<T> {
     const worker = await this.getWorker(opts);
-    return await worker.spawn(actor.toString());
+    return await worker.spawn(actor.toString()) as T;
   }
 
   async terminate() {
@@ -70,7 +69,7 @@ export class RoundRobinStrategy implements Strategy {
   }
 }
 
-export function worker(): void {
+export function makeWorker(): void {
   Comlink.expose({
     async spawn(actorCode: string): Promise<Actor> {
       const actor = (new Function(`return ${actorCode};`))();

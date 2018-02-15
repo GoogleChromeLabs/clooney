@@ -13,8 +13,9 @@
     "watchtestharmony": "karma start --no-single-run --browsers ChromeCanaryHeadlessHarmony",
     "version": "sed -i.bak -e 's!clooneyjs@[0-9.]+!clooneyjs@'${npm_package_version}'!' README.md && git add README.md",
     "mypublish": "npm run build && npm run test && cp README.md package.json dist && npm publish dist",
-    "build": "rm -rf dist/* && npm run compile",
-    "compile": "tsc --outDir dist && rollup -c rollup.config.js"
+    "build": "rm -rf dist/* && npm run compile && npm run minify",
+    "compile": "tsc --outDir dist && rollup -c rollup.config.js",
+    "minify": "babili -o dist/clooney{.min,}.js && babili -o dist/clooney.bundle{.min,}.js"
   },
   "keywords": [],
   "author": {
@@ -31,6 +32,7 @@
   "devDependencies": {
     "babili": "0.1.4",
     "chai": "4.1.2",
+    "comlinkjs": "^2.3.1",
     "eslint": "4.13.1",
     "eslint-config-google": "0.9.1",
     "karma": "1.7.1",
@@ -39,8 +41,8 @@
     "karma-mocha": "1.3.0",
     "mocha": "4.0.1",
     "rollup": "^0.56.0",
+    "rollup-plugin-alias": "^1.4.0",
     "typescript": "2.6.2",
-    "typescript-eslint-parser": "11.0.0",
-    "comlinkjs": "^2.3.1"
+    "typescript-eslint-parser": "11.0.0"
   }
 }
