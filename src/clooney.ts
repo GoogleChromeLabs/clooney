@@ -20,10 +20,12 @@ export interface ClooneyWorker {
 
 export interface Strategy {
   getWorker(opts: Object): Promise<ClooneyWorker>;
+  terminate(): Promise<void>;
 };
 
+
 export class RoundRobinStrategy implements Strategy {
-  _workers: ClooneyWorker[];
+  _workers: [Worker, ClooneyWorker][];
   _workerFile: string;
   _nextIndex: number = 0;
 
@@ -37,10 +39,14 @@ export class RoundRobinStrategy implements Strategy {
   }
 
   _initOrGetWorker(i: number): ClooneyWorker {
+    if (i >= this._workers.length)
+      throw Error('No worker available');
     if(!this._workers[i]) {
-      this._workers[i] = Comlink.proxy(new Worker(this._workerFile)) as any as ClooneyWorker;
+      const worker = new Worker(this._workerFile);
+      this._workers[i] = [worker, Comlink.proxy(worker) as any as ClooneyWorker];
+
     }
-    return this._workers[i];
+    return this._workers[i][1];
   }
 
   getWorker(opts: Object): Promise<ClooneyWorker> {
@@ -52,5 +58,14 @@ export class RoundRobinStrategy implements Strategy {
   async spawn(actor: Actor, opts: Object = {}): Promise<Actor> {
     const worker = await this.getWorker(opts);
     return await worker.spawn(actor.toString());
+  }
+
+  async terminate() {
+    this._workers.forEach(worker => worker && worker[0].terminate())
+    this._workers.length = 0;
+  }
+
+  get terminated() {
+    return this._workers.length <= 0;
   }
 }
