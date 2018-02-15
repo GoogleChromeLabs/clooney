@@ -37,7 +37,7 @@ export class RoundRobinStrategy {
     }
     async spawn(actor, opts = {}) {
         const worker = await this.getWorker(opts);
-        return await worker.spawn(actor.toString());
+        return await worker.spawn(actor.toString(), opts);
     }
     async terminate() {
         this._workers.forEach(worker => worker && worker[0].terminate());

@@ -6,7 +6,7 @@
   "module": "src/clooney.js",
   "typings": "clooney.d.ts",
   "scripts": {
-    "test": "npm run linter && npm run unittest && npm run build",
+    "test": "npm run linter && npm run build && npm run unittest",
     "unittest": "karma start",
     "linter": "eslint clooney.ts",
     "watchtest": "karma start --no-single-run --browsers ChromeHeadless",

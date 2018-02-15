@@ -15,7 +15,7 @@ import {Comlink} from 'comlink';
 export type Actor = Object;
 
 export interface ClooneyWorker {
-  spawn(actorCode: string): Promise<Actor>
+  spawn<T>(actor: Actor, opts: Object): Promise<T>;
 }
 
 export interface Strategy {
@@ -56,7 +56,7 @@ export class RoundRobinStrategy implements Strategy {
 
   async spawn<T>(actor: Actor, opts: Object = {}): Promise<T> {
     const worker = await this.getWorker(opts);
-    return await worker.spawn(actor.toString()) as T;
+    return await worker.spawn(actor.toString(), opts) as T;
   }
 
   async terminate() {
