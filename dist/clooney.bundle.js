@@ -325,29 +325,35 @@ const Comlink = (function () {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const thisScriptSrc = 'document' in self ? document.currentScript && document.currentScript.src : '';
 class RoundRobinStrategy {
-    constructor(workerFile) {
+    constructor(opts) {
         this._nextIndex = 0;
-        this._workerFile = workerFile;
-        this._workers = new Array(this.numWorkers).fill(null);
+        this._options = Object.assign({}, RoundRobinStrategy.defaultOptions, opts);
+        this._workers = new Array(this._options.maxNumWorkers).fill(null);
     }
-    get numWorkers() {
-        return navigator.hardwareConcurrency || 1;
+    static get defaultOptions() {
+        return {
+            workerFile: thisScriptSrc,
+            maxNumWorkers: 1
+        };
     }
     _initOrGetWorker(i) {
         if (i >= this._workers.length)
             throw Error('No worker available');
         if (!this._workers[i]) {
-            const worker = new Worker(this._workerFile);
+            const worker = new Worker(this._options.workerFile);
             this._workers[i] = [worker, Comlink.proxy(worker)];
         }
         return this._workers[i][1];
     }
     getWorker(opts) {
         const w = this._initOrGetWorker(this._nextIndex);
-        this._nextIndex = (this._nextIndex + 1) % this.numWorkers;
+        this._nextIndex = (this._nextIndex + 1) % this._options.maxNumWorkers;
         return Promise.resolve(w);
     }
+    // The return type is the class T where every method is async.
+    // Not sure if TypeScript can represent that somehow.
     async spawn(actor, opts = {}) {
         const worker = await this.getWorker(opts);
         return await worker.spawn(actor.toString(), opts);
@@ -368,6 +374,15 @@ function makeWorker(endpoint = self) {
         }
     }, endpoint);
 }
+function isWorker() {
+    // I’d have to import lib.webworker.d.ts to have access to
+    // WorkerGlobalScope, but I can’t because it conflicts with lib.dom.d.ts.
+    const wgs = self['WorkerGlobalScope'];
+    return wgs && self instanceof wgs;
+}
+// TODO: Find a way to opt-out of autostart
+if (isWorker())
+    makeWorker();
 
 exports.RoundRobinStrategy = RoundRobinStrategy;
 exports.makeWorker = makeWorker;

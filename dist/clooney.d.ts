@@ -19,12 +19,16 @@ export interface Strategy {
     getWorker(opts: Object): Promise<ClooneyWorker>;
     terminate(): Promise<void>;
 }
+export interface RoundRobinStrategyOptions {
+    workerFile: string;
+    maxNumWorkers: number;
+}
 export declare class RoundRobinStrategy implements Strategy {
     private _workers;
-    private _workerFile;
     private _nextIndex;
-    readonly numWorkers: number;
-    constructor(workerFile: string);
+    private _options;
+    static readonly defaultOptions: RoundRobinStrategyOptions;
+    constructor(opts: RoundRobinStrategyOptions);
     private _initOrGetWorker(i);
     getWorker(opts: Object): Promise<ClooneyWorker>;
     spawn<T>(actor: Actor, opts?: Object): Promise<T>;

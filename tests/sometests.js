@@ -9,7 +9,10 @@ describe('Clooney', function () {
 
   describe('RoundRobinStrategy', function () {
     beforeEach(async function () {
-      this.strategy = new Clooney.RoundRobinStrategy('/base/tests/fixtures/worker.js');
+      this.strategy = new Clooney.RoundRobinStrategy({
+        workerFile: '/base/tests/fixtures/worker.js',
+        maxNumWorkers: 2,
+      });
     });
 
     afterEach(async function () {

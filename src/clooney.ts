@@ -12,6 +12,8 @@
  */
 import {Comlink, Endpoint} from 'comlink';
 
+const thisScriptSrc: string = 'document' in self ? document.currentScript! && (document.currentScript as HTMLScriptElement)!.src! : '';
+
 export type Actor = Object;
 
 export interface ClooneyWorker {
@@ -23,25 +25,33 @@ export interface Strategy {
   terminate(): Promise<void>;
 };
 
+export interface RoundRobinStrategyOptions {
+  workerFile: string;
+  maxNumWorkers: number;
+}
+
 export class RoundRobinStrategy implements Strategy {
   private _workers: [Worker, ClooneyWorker][];
-  private _workerFile: string;
   private _nextIndex: number = 0;
+  private _options: RoundRobinStrategyOptions;
 
-  get numWorkers(): number {
-    return navigator.hardwareConcurrency || 1;
+  static get defaultOptions(): RoundRobinStrategyOptions {
+    return {
+      workerFile: thisScriptSrc,
+      maxNumWorkers: 1,
+    };
   }
 
-  constructor(workerFile: string) {
-    this._workerFile = workerFile;
-    this._workers = new Array(this.numWorkers).fill(null);
+  constructor(opts: RoundRobinStrategyOptions) {
+    this._options = {...RoundRobinStrategy.defaultOptions, ...opts};
+    this._workers = new Array(this._options.maxNumWorkers).fill(null);
   }
 
   private _initOrGetWorker(i: number): ClooneyWorker {
     if (i >= this._workers.length)
       throw Error('No worker available');
     if(!this._workers[i]) {
-      const worker = new Worker(this._workerFile);
+      const worker = new Worker(this._options.workerFile);
       this._workers[i] = [worker, Comlink.proxy(worker) as any as ClooneyWorker];
 
     }
@@ -50,7 +60,7 @@ export class RoundRobinStrategy implements Strategy {
 
   getWorker(opts: Object): Promise<ClooneyWorker> {
     const w = this._initOrGetWorker(this._nextIndex);
-    this._nextIndex = (this._nextIndex + 1) % this.numWorkers;
+    this._nextIndex = (this._nextIndex + 1) % this._options.maxNumWorkers;
     return Promise.resolve(w);
   }
 
@@ -79,3 +89,14 @@ export function makeWorker(endpoint: Endpoint | Window = self): void {
     }
   }, endpoint);
 }
+
+function isWorker(): boolean {
+  // I’d have to import lib.webworker.d.ts to have access to
+  // WorkerGlobalScope, but I can’t because it conflicts with lib.dom.d.ts.
+  const wgs: any = (self as any)['WorkerGlobalScope']
+  return wgs && self instanceof wgs;
+}
+
+// TODO: Find a way to opt-out of autostart
+if (isWorker())
+  makeWorker();
