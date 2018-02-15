@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Comlink, Endpoint} from 'comlink';
+import {Comlink, Endpoint} from 'comlink'; // eslint-disable-line no-unused-vars
 
 const thisScriptSrc: string = 'document' in self ? document.currentScript! && (document.currentScript as HTMLScriptElement)!.src! : '';
 
@@ -23,7 +23,7 @@ export interface ClooneyWorker {
 export interface Strategy {
   getWorker(opts: Object): Promise<ClooneyWorker>;
   terminate(): Promise<void>;
-};
+}
 
 export interface RoundRobinStrategyOptions {
   workerFile: string;
@@ -50,10 +50,9 @@ export class RoundRobinStrategy implements Strategy {
   private _initOrGetWorker(i: number): ClooneyWorker {
     if (i >= this._workers.length)
       throw Error('No worker available');
-    if(!this._workers[i]) {
+    if (!this._workers[i]) {
       const worker = new Worker(this._options.workerFile);
       this._workers[i] = [worker, Comlink.proxy(worker) as any as ClooneyWorker];
-
     }
     return this._workers[i][1];
   }
@@ -72,7 +71,7 @@ export class RoundRobinStrategy implements Strategy {
   }
 
   async terminate() {
-    this._workers.forEach(worker => worker && worker[0].terminate())
+    this._workers.forEach(worker => worker && worker[0].terminate());
     this._workers.length = 0;
   }
 
@@ -85,15 +84,15 @@ export function makeWorker(endpoint: Endpoint | Window = self): void {
   Comlink.expose({
     async spawn(actorCode: string): Promise<Actor> {
       const actor = (new Function(`return ${actorCode};`))();
-      return Comlink.proxyValue(new actor()) as Actor;
-    }
+      return Comlink.proxyValue(new actor()) as Actor; // eslint-disable-line new-cap
+    },
   }, endpoint);
 }
 
 function isWorker(): boolean {
   // I’d have to import lib.webworker.d.ts to have access to
   // WorkerGlobalScope, but I can’t because it conflicts with lib.dom.d.ts.
-  const wgs: any = (self as any)['WorkerGlobalScope']
+  const wgs: any = (self as any)['WorkerGlobalScope'];
   return wgs && self instanceof wgs;
 }
 

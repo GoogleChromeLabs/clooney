@@ -335,7 +335,7 @@ class RoundRobinStrategy {
     static get defaultOptions() {
         return {
             workerFile: thisScriptSrc,
-            maxNumWorkers: 1
+            maxNumWorkers: 1,
         };
     }
     _initOrGetWorker(i) {
@@ -370,8 +370,8 @@ function makeWorker(endpoint = self) {
     Comlink.expose({
         async spawn(actorCode) {
             const actor = (new Function(`return ${actorCode};`))();
-            return Comlink.proxyValue(new actor());
-        }
+            return Comlink.proxyValue(new actor()); // eslint-disable-line new-cap
+        },
     }, endpoint);
 }
 function isWorker() {

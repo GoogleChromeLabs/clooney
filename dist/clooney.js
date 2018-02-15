@@ -10,9 +10,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Comlink } from 'comlink';
+import { Comlink } from 'comlink'; // eslint-disable-line no-unused-vars
 const thisScriptSrc = 'document' in self ? document.currentScript && document.currentScript.src : '';
-;
 export class RoundRobinStrategy {
     constructor(opts) {
         this._nextIndex = 0;
@@ -22,7 +21,7 @@ export class RoundRobinStrategy {
     static get defaultOptions() {
         return {
             workerFile: thisScriptSrc,
-            maxNumWorkers: 1
+            maxNumWorkers: 1,
         };
     }
     _initOrGetWorker(i) {
@@ -57,8 +56,8 @@ export function makeWorker(endpoint = self) {
     Comlink.expose({
         async spawn(actorCode) {
             const actor = (new Function(`return ${actorCode};`))();
-            return Comlink.proxyValue(new actor());
-        }
+            return Comlink.proxyValue(new actor()); // eslint-disable-line new-cap
+        },
     }, endpoint);
 }
 function isWorker() {
