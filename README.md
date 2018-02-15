@@ -3,7 +3,7 @@
 Clooney is an actor (ayooo) library for the web. Classes given to Clooney will be instantiated and run in a worker, keeping the main thread responsive.
 
 ```
-https://cdn.jsdelivr.net/npm/clooneyjs@0.0.1/clooney.bundle.min.js
+https://cdn.jsdelivr.net/npm/clooneyjs@0.1.0/clooney.bundle.min.js
 ```
 
 ## Quickstart
