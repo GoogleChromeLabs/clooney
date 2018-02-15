@@ -1,0 +1,8 @@
+sudo: required
+
+services:
+  - docker
+
+script:
+  - docker build -t clooney .
+  - docker run --rm -v `pwd`:/usr/src clooney
