@@ -69,3 +69,12 @@ export class RoundRobinStrategy implements Strategy {
     return this._workers.length <= 0;
   }
 }
+
+export function worker(): void {
+  Comlink.expose({
+    async spawn(actorCode: string): Promise<Actor> {
+      const actor = (new Function(`return ${actorCode};`))();
+      return Comlink.proxyValue(new actor()) as Actor;
+    }
+  }, self);
+}

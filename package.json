@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "main": "clooney.umd.js",
-  "module": "clooney.es6.js",
+  "module": "src/clooney.js",
   "typings": "clooney.d.ts",
   "scripts": {
     "test": "npm run linter && npm run unittest && npm run build",
@@ -13,9 +13,8 @@
     "watchtestharmony": "karma start --no-single-run --browsers ChromeCanaryHeadlessHarmony",
     "version": "sed -i.bak -e 's!clooneyjs@[0-9.]+!clooneyjs@'${npm_package_version}'!' README.md && git add README.md",
     "mypublish": "npm run build && npm run test && cp README.md package.json dist && npm publish dist",
-    "build": "rm -rf dist && mkdir dist && npm run compile && npm run minify",
-    "compile": "tsc --outDir dist && rollup -c rollup.config.js",
-    "minify": "babili -o dist/clooney.{min.,}js && babili -o dist/clooney.{min.,}js"
+    "build": "rm -rf dist/* && npm run compile",
+    "compile": "tsc --outDir dist && rollup -c rollup.config.js"
   },
   "keywords": [],
   "author": {
