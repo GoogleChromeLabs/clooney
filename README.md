@@ -60,7 +60,7 @@ const strategy = new Clooney.RoundRobinStrategy({
 If you want to use Clooney from a CDN, you need to work around the same-origin restrictions that workers have:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/clooneyjs@0.2.0/clooney.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clooneyjs@0.3.0/clooney.bundle.min.js"></script>
 <script>
   async function newContainerFunc() {
     const blob = await fetch(Clooney.defaultWorkerSrc).then(resp => resp.blob())
