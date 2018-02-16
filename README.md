@@ -46,15 +46,10 @@ export interface Strategy {
 #### `Clooney.RoundRobinStrategy(opts)`
 `RoundRobingStrategy` creates up to n containers and cycles through the containers with every `spawn` call. `RoundRobinStrategy` is the default strategy.
 
-Default options:
+### Strategy Options
 
-```js
-const strategy = new Clooney.RoundRobinStrategy({
-  workerFile: thisScriptSrc,
-  maxNumContainers: 1,
-  newContainerFunc: async (path: string) => new Worker(path),
-})
-```
+- `maxNumContainers`: Maximum number of containers to create (default: 1)
+- `newWorkerFunc`: Asynchronous function that creates a new container (default: `new Worker(Clooney.defaultWorkerSrc)`)
 
 ## CDN
 If you want to use Clooney from a CDN, you need to work around the same-origin restrictions that workers have:
@@ -62,12 +57,12 @@ If you want to use Clooney from a CDN, you need to work around the same-origin r
 ```html
 <script src="https://cdn.jsdelivr.net/npm/clooneyjs@0.3.0/clooney.bundle.min.js"></script>
 <script>
-  async function newContainerFunc() {
+  async function newWorkerFunc() {
     const blob = await fetch(Clooney.defaultWorkerSrc).then(resp => resp.blob())
     return new Worker(URL.createObjectURL(blob));
   }
 
-  const strategy = new Clooney.RoundRobinStrategy({newContainerFunc});
+  const strategy = new Clooney.RoundRobinStrategy({newWorkerFunc});
   // Business as usual using strategy.spawn() ...
 </script>
 ```
