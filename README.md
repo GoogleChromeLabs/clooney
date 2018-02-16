@@ -35,7 +35,7 @@ If you want to use Clooney from a CDN, you need to work around the same-origin r
     return new oldWorker(URL.createObjectURL(blob), opts);
   }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/clooneyjs@0.1.0/clooney.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clooneyjs@0.1.1/clooney.bundle.min.js"></script>
 ```
 
 ---
