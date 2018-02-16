@@ -13,52 +13,53 @@
 import { Comlink } from 'comlink'; // eslint-disable-line no-unused-vars
 export { Comlink } from 'comlink';
 const thisScriptSrc = 'document' in self ? document.currentScript && document.currentScript.src : '';
+/**
+ * `RoundRobingStrategy` creates up to n containers and cycles through the containers with every `spawn` call.
+ */
 export class RoundRobinStrategy {
     constructor(opts = {}) {
         this._nextIndex = 0;
         this._options = Object.assign({}, RoundRobinStrategy.defaultOptions, opts);
-        this._workers = new Array(this._options.maxNumWorkers).fill(null);
+        this._containers = new Array(this._options.maxNumContainers).fill(null);
     }
     static get defaultOptions() {
         return {
             workerFile: thisScriptSrc,
-            maxNumWorkers: 1,
-            newWorkerFunc: async (path) => new Worker(path),
+            maxNumContainers: 1,
+            newContainerFunc: async (path) => new Worker(path),
         };
     }
-    async _initOrGetWorker(i) {
-        if (i >= this._workers.length)
+    async _initOrGetContainer(i) {
+        if (i >= this._containers.length)
             throw Error('No worker available');
-        if (!this._workers[i]) {
-            const worker = await this._options.newWorkerFunc(this._options.workerFile);
-            this._workers[i] = [worker, Comlink.proxy(worker)];
+        if (!this._containers[i]) {
+            const worker = await this._options.newContainerFunc(this._options.workerFile);
+            this._containers[i] = [worker, Comlink.proxy(worker)];
         }
-        return this._workers[i][1];
+        return this._containers[i][1];
     }
-    async getWorker(opts) {
-        const w = await this._initOrGetWorker(this._nextIndex);
-        this._nextIndex = (this._nextIndex + 1) % this._options.maxNumWorkers;
+    async _getNextContainer(opts) {
+        const w = await this._initOrGetContainer(this._nextIndex);
+        this._nextIndex = (this._nextIndex + 1) % this._options.maxNumContainers;
         return w;
     }
-    // The return type is the class T where every method is async.
-    // Not sure if TypeScript can represent that somehow.
     async spawn(actor, opts = {}) {
-        const worker = await this.getWorker(opts);
+        const worker = await this._getNextContainer(opts);
         return await worker.spawn(actor.toString(), opts);
     }
     async terminate() {
-        this._workers.forEach(worker => worker && worker[0].terminate());
-        this._workers.length = 0;
+        this._containers.forEach(containers => containers && containers[0].terminate());
+        this._containers.length = 0;
     }
     get terminated() {
-        return this._workers.length <= 0;
+        return this._containers.length <= 0;
     }
 }
-const defaultStrategy = new RoundRobinStrategy();
+export let defaultStrategy = new RoundRobinStrategy();
 export async function spawn(actor, opts = {}) {
     return defaultStrategy.spawn(actor, opts);
 }
-export function makeWorker(endpoint = self) {
+export function makeContainer(endpoint = self) {
     Comlink.expose({
         async spawn(actorCode) {
             const actor = (new Function(`return ${actorCode};`))();
@@ -74,4 +75,4 @@ function isWorker() {
 }
 // TODO: Find a way to opt-out of autostart
 if (isWorker())
-    makeWorker();
+    makeContainer();

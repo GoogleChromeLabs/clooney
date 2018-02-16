@@ -12,30 +12,55 @@
  */
 import { Endpoint } from 'comlink';
 export { Comlink } from 'comlink';
-export declare type Actor = Object;
-export interface ClooneyWorker {
-    spawn<T>(actor: Actor, opts: Object): Promise<T>;
+export declare type Actor = Function;
+export declare type ActorSource = string;
+export interface Terminatable {
+    terminate(): void;
 }
+/**
+ * ActorContainer can run actors. This interface is implemented by Web Workers.
+ */
+export declare type ActorContainer = Endpoint & Terminatable;
 export interface Strategy {
-    getWorker(opts: Object): Promise<ClooneyWorker>;
+    /**
+     * `spawn` instantiates the given source in an actor container of the strategy’s choice.
+     * @returns The return type is the type of the given source, but every method is implicitly async.
+     */
+    spawn(actor: Actor, opts: Object): Promise<Object>;
+    /**
+     * `terminate` calls `terminate()` on all existing containers of the strategy.
+     */
     terminate(): Promise<void>;
 }
 export interface StrategyOptions {
+    /**
+     * Path of the file to use for workers. The default value is clooney.js (determined via `document.currentScript.src`).
+     */
     workerFile?: string;
-    maxNumWorkers?: number;
-    newWorkerFunc?: (path: string) => Promise<Worker>;
+    /**
+     * Maximum number of containers the strategy is allowed to spin up. Default is 1.
+     */
+    maxNumContainers?: number;
+    /**
+     * Asynchronous function to create a new actor container. Default is a call to `new Worker(path)`.
+     */
+    newContainerFunc?: (path: string) => Promise<ActorContainer>;
 }
+/**
+ * `RoundRobingStrategy` creates up to n containers and cycles through the containers with every `spawn` call.
+ */
 export declare class RoundRobinStrategy implements Strategy {
-    private _workers;
+    private _containers;
     private _nextIndex;
     private _options;
     static readonly defaultOptions: StrategyOptions;
     constructor(opts?: StrategyOptions);
-    private _initOrGetWorker(i);
-    getWorker(opts: Object): Promise<ClooneyWorker>;
+    private _initOrGetContainer(i);
+    private _getNextContainer(opts);
     spawn<T>(actor: Actor, opts?: Object): Promise<T>;
     terminate(): Promise<void>;
     readonly terminated: boolean;
 }
+export declare let defaultStrategy: RoundRobinStrategy;
 export declare function spawn<T>(actor: Actor, opts?: Object): Promise<T>;
-export declare function makeWorker(endpoint?: Endpoint | Window): void;
+export declare function makeContainer(endpoint?: Endpoint | Window): void;

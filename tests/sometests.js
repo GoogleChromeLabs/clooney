@@ -34,7 +34,7 @@ describe('Clooney', function () {
   describe('RoundRobinStrategy', function () {
     beforeEach(async function () {
       this.strategy = new Clooney.RoundRobinStrategy({
-        maxNumWorkers: 2,
+        maxNumContainers: 2,
       });
     });
 
@@ -85,12 +85,12 @@ describe('Clooney', function () {
     });
 
     it('uses the worker func', function (done) {
-      function newWorkerFunc(path) {
+      async function newContainerFunc(path) {
         done();
         return new Worker(path);
       }
       class MyActor {}
-      const strategy = new Clooney.RoundRobinStrategy({newWorkerFunc});
+      const strategy = new Clooney.RoundRobinStrategy({newContainerFunc});
       strategy.spawn(MyActor);
     });
 
