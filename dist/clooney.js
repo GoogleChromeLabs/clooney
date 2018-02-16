@@ -23,21 +23,22 @@ export class RoundRobinStrategy {
         return {
             workerFile: thisScriptSrc,
             maxNumWorkers: 1,
+            newWorkerFunc: async (path) => new Worker(path),
         };
     }
-    _initOrGetWorker(i) {
+    async _initOrGetWorker(i) {
         if (i >= this._workers.length)
             throw Error('No worker available');
         if (!this._workers[i]) {
-            const worker = new Worker(this._options.workerFile);
+            const worker = await this._options.newWorkerFunc(this._options.workerFile);
             this._workers[i] = [worker, Comlink.proxy(worker)];
         }
         return this._workers[i][1];
     }
-    getWorker(opts) {
-        const w = this._initOrGetWorker(this._nextIndex);
+    async getWorker(opts) {
+        const w = await this._initOrGetWorker(this._nextIndex);
         this._nextIndex = (this._nextIndex + 1) % this._options.maxNumWorkers;
-        return Promise.resolve(w);
+        return w;
     }
     // The return type is the class T where every method is async.
     // Not sure if TypeScript can represent that somehow.

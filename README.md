@@ -27,15 +27,16 @@ An example says more than 1000 words:
 If you want to use Clooney from a CDN, you need to work around the same-origin restrictions that workers have:
 
 ```html
-<script>
-  // Disgusting monkey patch — courtesy of @developit
-  var oldWorker = Worker;
-  Worker = function(url, opts) {
-    const blob = new Blob([`importScripts(${JSON.stringify(url)})`]);
-    return new oldWorker(URL.createObjectURL(blob), opts);
-  }
-</script>
 <script src="https://cdn.jsdelivr.net/npm/clooneyjs@0.1.1/clooney.bundle.min.js"></script>
+<script>
+  async function newWorkerFunc(path) {
+    const blob = await fetch(path).then(resp => resp.blob())
+    return new Worker(URL.createObjectURL(blob));
+  }
+
+  const strategy = new Clooney.RoundRobinStrategy({newWorkerFunc});
+  // Business as usual using strategy.spawn() ...
+</script>
 ```
 
 ---

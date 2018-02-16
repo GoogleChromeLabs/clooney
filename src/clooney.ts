@@ -27,42 +27,44 @@ export interface Strategy {
   terminate(): Promise<void>;
 }
 
-export interface RoundRobinStrategyOptions {
+export interface StrategyOptions {
   workerFile?: string;
   maxNumWorkers?: number;
+  newWorkerFunc?: (path: string) => Promise<Worker>;
 }
 
 export class RoundRobinStrategy implements Strategy {
   private _workers: [Worker, ClooneyWorker][];
   private _nextIndex: number = 0;
-  private _options: RoundRobinStrategyOptions;
+  private _options: StrategyOptions;
 
-  static get defaultOptions(): RoundRobinStrategyOptions {
+  static get defaultOptions(): StrategyOptions {
     return {
       workerFile: thisScriptSrc,
       maxNumWorkers: 1,
+      newWorkerFunc: async (path: string) => new Worker(path),
     };
   }
 
-  constructor(opts: RoundRobinStrategyOptions = {}) {
+  constructor(opts: StrategyOptions = {}) {
     this._options = {...RoundRobinStrategy.defaultOptions, ...opts};
     this._workers = new Array(this._options.maxNumWorkers).fill(null);
   }
 
-  private _initOrGetWorker(i: number): ClooneyWorker {
+  private async _initOrGetWorker(i: number): Promise<ClooneyWorker> {
     if (i >= this._workers.length)
       throw Error('No worker available');
     if (!this._workers[i]) {
-      const worker = new Worker(this._options.workerFile!);
+      const worker = await this._options.newWorkerFunc!(this._options.workerFile!);
       this._workers[i] = [worker, Comlink.proxy(worker) as any as ClooneyWorker];
     }
     return this._workers[i][1];
   }
 
-  getWorker(opts: Object): Promise<ClooneyWorker> {
-    const w = this._initOrGetWorker(this._nextIndex);
+  async getWorker(opts: Object): Promise<ClooneyWorker> {
+    const w = await this._initOrGetWorker(this._nextIndex);
     this._nextIndex = (this._nextIndex + 1) % this._options.maxNumWorkers!;
-    return Promise.resolve(w);
+    return w;
   }
 
   // The return type is the class T where every method is async.

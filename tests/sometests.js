@@ -73,5 +73,15 @@ describe('Clooney', function () {
         .then(_ => Promise.reject())
         .catch(_ => {});
     });
+
+    it('uses the worker func', function (done) {
+      function newWorkerFunc(path) {
+        done();
+        return new Worker(path);
+      }
+      class MyActor {}
+      const strategy = new Clooney.RoundRobinStrategy({newWorkerFunc});
+      strategy.spawn(MyActor);
+    });
   });
 });
