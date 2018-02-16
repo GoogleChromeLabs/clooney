@@ -14,31 +14,32 @@ import {Comlink, Endpoint} from 'comlink'; // eslint-disable-line no-unused-vars
 
 export {Comlink} from 'comlink';
 
-const thisScriptSrc: string = 'document' in self ? document.currentScript! && (document.currentScript as HTMLScriptElement).src : '';
+/**
+ * `defaultWorkerSrc` is the path passed to the `new Worker()` call. It’s recommended to not change this variable but instead overload `newWorkerFunc`.
+ */
+export let defaultWorkerSrc: string = 'document' in self ? document.currentScript! && (document.currentScript as HTMLScriptElement).src : '';
 
 export type Actor = Function;
 export type ActorSource = string;
 
-export interface Terminatable {
+export interface TerminatableEndpoint extends Endpoint {
   terminate(): void;
 }
 
 /**
  * ActorContainer can run actors. This interface is implemented by Web Workers.
  */
-export type ActorContainer = Endpoint & Terminatable;
-
-// TODO: Refactor this into a proper type that implements ActorContainer.
-interface ClooneyWorker {
+export interface ActorContainer {
   spawn(actor: ActorSource, opts: Object): Promise<Object>;
+  terminate(): void;
 }
 
 export interface Strategy {
   /**
-   * `spawn` instantiates the given source in an actor container of the strategy’s choice.
-   * @returns The return type is the type of the given source, but every method is implicitly async.
+   * `spawn` instantiates the given actor in an actor container of the strategy’s choice.
+   * @returns The return type is the type as T, but every method is implicitly async.
    */
-  spawn(actor: Actor, opts: Object): Promise<Object>;
+  spawn<T>(actor: new () => T, opts: Object): Promise<T>;
   /**
    * `terminate` calls `terminate()` on all existing containers of the strategy.
    */
@@ -48,63 +49,60 @@ export interface Strategy {
 
 export interface StrategyOptions {
   /**
-   * Path of the file to use for workers. The default value is clooney.js (determined via `document.currentScript.src`).
-   */
-  workerFile?: string;
-  /**
    * Maximum number of containers the strategy is allowed to spin up. Default is 1.
    */
   maxNumContainers?: number;
   /**
-   * Asynchronous function to create a new actor container. Default is a call to `new Worker(path)`.
+   * Asynchronous function to create a new worker. Default is a call to `new Worker(defaultWorkerSrc)`.
    */
-  newContainerFunc?: (path: string) => Promise<ActorContainer>;
+  newWorkerFunc?: () => Promise<TerminatableEndpoint>;
 }
+
+export const defaultOpts = {
+  maxNumContainers: 1,
+  newWorkerFunc: async () => new Worker(defaultWorkerSrc),
+};
 
 /**
  * `RoundRobingStrategy` creates up to n containers and cycles through the containers with every `spawn` call.
  */
 export class RoundRobinStrategy implements Strategy {
-  private _containers: [ActorContainer, ClooneyWorker][];
+  private _containers: ActorContainer[];
   private _nextIndex: number = 0;
   private _options: StrategyOptions;
 
-  static get defaultOptions(): StrategyOptions {
-    return {
-      workerFile: thisScriptSrc,
-      maxNumContainers: 1,
-      newContainerFunc: async (path: string) => new Worker(path),
-    };
-  }
-
   constructor(opts: StrategyOptions = {}) {
-    this._options = {...RoundRobinStrategy.defaultOptions, ...opts};
+    this._options = {...defaultOpts, ...opts};
     this._containers = new Array(this._options.maxNumContainers).fill(null);
   }
 
-  private async _initOrGetContainer(i: number): Promise<ClooneyWorker> {
+  private async _initOrGetContainer(i: number): Promise<ActorContainer> {
     if (i >= this._containers.length)
       throw Error('No worker available');
     if (!this._containers[i]) {
-      const worker = await this._options.newContainerFunc!(this._options.workerFile!);
-      this._containers[i] = [worker, Comlink.proxy(worker) as any as ClooneyWorker];
+      const worker = await this._options.newWorkerFunc!();
+      const remote = Comlink.proxy(worker) as any;
+      this._containers[i] = {
+        spawn: remote.spawn.bind(spawn),
+        terminate: worker.terminate.bind(worker),
+      };
     }
-    return this._containers[i][1];
+    return this._containers[i];
   }
 
-  private async _getNextContainer(opts: Object): Promise<ClooneyWorker> {
+  private async _getNextContainer(opts: Object): Promise<ActorContainer> {
     const w = await this._initOrGetContainer(this._nextIndex);
     this._nextIndex = (this._nextIndex + 1) % this._options.maxNumContainers!;
     return w;
   }
 
   async spawn<T>(actor: Actor, opts: Object = {}): Promise<T> {
-    const worker = await this._getNextContainer(opts);
-    return await worker.spawn(actor.toString(), opts) as T;
+    const container = await this._getNextContainer(opts);
+    return await container.spawn(actor.toString(), opts) as T;
   }
 
   async terminate() {
-    this._containers.forEach(containers => containers && containers[0].terminate());
+    this._containers.filter(c => c).forEach(container => container.terminate());
     this._containers.length = 0;
   }
 

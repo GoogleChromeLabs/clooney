@@ -12,31 +12,35 @@
  */
 import { Comlink } from 'comlink'; // eslint-disable-line no-unused-vars
 export { Comlink } from 'comlink';
-const thisScriptSrc = 'document' in self ? document.currentScript && document.currentScript.src : '';
+/**
+ * `defaultWorkerSrc` is the path passed to the `new Worker()` call. It’s recommended to not change this variable but instead overload `newWorkerFunc`.
+ */
+export let defaultWorkerSrc = 'document' in self ? document.currentScript && document.currentScript.src : '';
+export const defaultOpts = {
+    maxNumContainers: 1,
+    newWorkerFunc: async () => new Worker(defaultWorkerSrc),
+};
 /**
  * `RoundRobingStrategy` creates up to n containers and cycles through the containers with every `spawn` call.
  */
 export class RoundRobinStrategy {
     constructor(opts = {}) {
         this._nextIndex = 0;
-        this._options = Object.assign({}, RoundRobinStrategy.defaultOptions, opts);
+        this._options = Object.assign({}, defaultOpts, opts);
         this._containers = new Array(this._options.maxNumContainers).fill(null);
-    }
-    static get defaultOptions() {
-        return {
-            workerFile: thisScriptSrc,
-            maxNumContainers: 1,
-            newContainerFunc: async (path) => new Worker(path),
-        };
     }
     async _initOrGetContainer(i) {
         if (i >= this._containers.length)
             throw Error('No worker available');
         if (!this._containers[i]) {
-            const worker = await this._options.newContainerFunc(this._options.workerFile);
-            this._containers[i] = [worker, Comlink.proxy(worker)];
+            const worker = await this._options.newWorkerFunc();
+            const remote = Comlink.proxy(worker);
+            this._containers[i] = {
+                spawn: remote.spawn.bind(spawn),
+                terminate: worker.terminate.bind(worker),
+            };
         }
-        return this._containers[i][1];
+        return this._containers[i];
     }
     async _getNextContainer(opts) {
         const w = await this._initOrGetContainer(this._nextIndex);
@@ -44,11 +48,11 @@ export class RoundRobinStrategy {
         return w;
     }
     async spawn(actor, opts = {}) {
-        const worker = await this._getNextContainer(opts);
-        return await worker.spawn(actor.toString(), opts);
+        const container = await this._getNextContainer(opts);
+        return await container.spawn(actor.toString(), opts);
     }
     async terminate() {
-        this._containers.forEach(containers => containers && containers[0].terminate());
+        this._containers.filter(c => c).forEach(container => container.terminate());
         this._containers.length = 0;
     }
     get terminated() {

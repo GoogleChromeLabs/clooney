@@ -85,22 +85,13 @@ describe('Clooney', function () {
     });
 
     it('uses the worker func', function (done) {
-      async function newContainerFunc(path) {
+      async function newWorkerFunc() {
         done();
-        return new Worker(path);
+        return new Worker(Clooney.defaultWorkerSrc);
       }
       class MyActor {}
-      const strategy = new Clooney.RoundRobinStrategy({newContainerFunc});
+      const strategy = new Clooney.RoundRobinStrategy({newWorkerFunc});
       strategy.spawn(MyActor);
-    });
-
-    it('uses the provided worker file', async function () {
-      class MyActor {}
-
-      const strategy = new Clooney.RoundRobinStrategy({
-        workerFile: '/base/tests/fixtures/worker.js',
-      });
-      expect(await strategy.spawn(MyActor)).to.equal(42);
     });
   });
 });
