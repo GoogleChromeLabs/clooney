@@ -23,7 +23,6 @@ describe('Clooney', function () {
   describe('RoundRobinStrategy', function () {
     beforeEach(async function () {
       this.strategy = new Clooney.RoundRobinStrategy({
-        workerFile: '/base/tests/fixtures/worker.js',
         maxNumWorkers: 2,
       });
     });
@@ -65,7 +64,7 @@ describe('Clooney', function () {
     it('can be terminated', async function () {
       class MyActor {}
 
-      const strategy = new Clooney.RoundRobinStrategy('/base/tests/fixtures/worker.js');
+      const strategy = new Clooney.RoundRobinStrategy();
       const actor1 = await strategy.spawn(MyActor);
       const actor2 = await strategy.spawn(MyActor);
       await strategy.terminate();
@@ -82,6 +81,15 @@ describe('Clooney', function () {
       class MyActor {}
       const strategy = new Clooney.RoundRobinStrategy({newWorkerFunc});
       strategy.spawn(MyActor);
+    });
+
+    it('uses the provided worker file', async function () {
+      class MyActor {}
+
+      const strategy = new Clooney.RoundRobinStrategy({
+        workerFile: '/base/tests/fixtures/worker.js',
+      });
+      expect(await strategy.spawn(MyActor)).to.equal(42);
     });
   });
 });
