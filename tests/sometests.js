@@ -20,6 +20,17 @@ describe('Clooney', function () {
     expect(Clooney).to.exist;
   });
 
+  it('has a default strategy', async function () {
+    class MyActor {
+      aNumber() {
+        return 42;
+      }
+    }
+
+    const instance = await Clooney.spawn(MyActor);
+    expect(await instance.aNumber()).to.equal(42);
+  });
+
   describe('RoundRobinStrategy', function () {
     beforeEach(async function () {
       this.strategy = new Clooney.RoundRobinStrategy({
