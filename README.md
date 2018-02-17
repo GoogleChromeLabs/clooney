@@ -70,7 +70,7 @@ await actor.callCallback(msg => console.log(msg)); // logs 'ohai'
 If you want to use Clooney from a CDN, you need to work around the same-origin restrictions that workers have:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/clooneyjs@0.3.1/clooney.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clooneyjs@0.4.0/clooney.bundle.min.js"></script>
 <script>
   async function newWorkerFunc() {
     const blob = await fetch(Clooney.defaultWorkerSrc).then(resp => resp.blob())
