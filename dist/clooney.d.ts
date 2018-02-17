@@ -13,6 +13,10 @@
 import { Endpoint } from 'comlink';
 export { Comlink } from 'comlink';
 /**
+ * `asRemoteValue` marks a value. If a marked value is used as an parameter or return value, it will not be transferred but instead proxied.
+ */
+export declare const asRemoteValue: <T>(x: T) => T;
+/**
  * `defaultWorkerSrc` is the path passed to the `new Worker()` call. It’s recommended to not change this variable but instead overload `newWorkerFunc`.
  */
 export declare let defaultWorkerSrc: string;

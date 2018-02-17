@@ -15,6 +15,11 @@ import {Comlink, Endpoint} from 'comlink'; // eslint-disable-line no-unused-vars
 export {Comlink} from 'comlink';
 
 /**
+ * `asRemoteValue` marks a value. If a marked value is used as an parameter or return value, it will not be transferred but instead proxied.
+ */
+export const asRemoteValue: <T>(x: T) => T = Comlink.proxyValue;
+
+/**
  * `defaultWorkerSrc` is the path passed to the `new Worker()` call. It’s recommended to not change this variable but instead overload `newWorkerFunc`.
  */
 export let defaultWorkerSrc: string = 'document' in self ? document.currentScript! && (document.currentScript as HTMLScriptElement).src : '';

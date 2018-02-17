@@ -31,6 +31,34 @@ describe('Clooney', function () {
     expect(await instance.aNumber()).to.equal(42);
   });
 
+  it('respects asRemoteValue', function (done) {
+    const obj = {
+      myCallback() {
+        done();
+      }
+    };
+
+    class MyActor {
+      async callTheCallback(obj) {
+        await obj.myCallback();
+      }
+    }
+
+    Clooney.spawn(MyActor)
+      .then(actor => actor.callTheCallback(Clooney.asRemoteValue(obj)));
+  });
+
+  it('proxies functions', function (done) {
+    class MyActor {
+      async callCallback(cb) {
+        await cb();
+      }
+    }
+
+    Clooney.spawn(MyActor)
+      .then(actor => actor.callCallback(Clooney.asRemoteValue(done)));
+  });
+
   describe('RoundRobinStrategy', function () {
     beforeEach(async function () {
       this.strategy = new Clooney.RoundRobinStrategy({

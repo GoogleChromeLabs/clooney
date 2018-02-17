@@ -31,7 +31,7 @@
   "devDependencies": {
     "babili": "0.1.4",
     "chai": "4.1.2",
-    "comlinkjs": "^2.3.1",
+    "comlinkjs": "^2.3.2",
     "eslint": "4.13.1",
     "eslint-config-google": "0.9.1",
     "karma": "1.7.1",

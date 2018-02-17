@@ -51,6 +51,21 @@ export interface Strategy {
 - `maxNumContainers`: Maximum number of containers to create (default: 1)
 - `newWorkerFunc`: Asynchronous function that creates a new container (default: `new Worker(Clooney.defaultWorkerSrc)`)
 
+### `Clooney.asRemoteValue(obj)`
+
+`asRemoteValue` marks a value. If a marked value is used as an parameter or return value, it will not be transferred but instead proxied. This is necessary, for example, for callbacks.
+
+```js
+class MyActor {
+  async callCallback(cb) {
+    await cb('ohai');
+  }
+}
+
+const actor = await Clooney.spawn(MyActor);
+await actor.callCallback(msg => console.log(msg)); // logs 'ohai'
+```
+
 ## CDN
 If you want to use Clooney from a CDN, you need to work around the same-origin restrictions that workers have:
 

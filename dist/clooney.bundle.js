@@ -326,6 +326,10 @@ const Comlink = (function () {
  * limitations under the License.
  */
 /**
+ * `asRemoteValue` marks a value. If a marked value is used as an parameter or return value, it will not be transferred but instead proxied.
+ */
+const asRemoteValue = Comlink.proxyValue;
+/**
  * `defaultWorkerSrc` is the path passed to the `new Worker()` call. It’s recommended to not change this variable but instead overload `newWorkerFunc`.
  */
 let defaultWorkerSrc = 'document' in self ? document.currentScript && document.currentScript.src : '';
@@ -394,6 +398,7 @@ function isWorker() {
 if (isWorker())
     makeContainer();
 
+exports.asRemoteValue = asRemoteValue;
 exports.defaultWorkerSrc = defaultWorkerSrc;
 exports.defaultOpts = defaultOpts;
 exports.RoundRobinStrategy = RoundRobinStrategy;
