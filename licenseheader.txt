@@ -1,4 +1,5 @@
 /**
+ * @license
  * Copyright 2018 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -10,20 +11,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import alias from 'rollup-plugin-alias';
-
-export default {
-  input: 'dist/clooney.js',
-  output: {
-    file: 'dist/clooney.bundle.js',
-    format: 'iife',
-    name: 'Clooney',
-    banner: require('fs').readFileSync('licenseheader.txt'),
-  },
-  plugins: [
-    alias({
-      'comlink': 'node_modules/comlinkjs/comlink.es6.js',
-    }),
-  ],
-};

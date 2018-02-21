@@ -14,7 +14,7 @@
     "mypublish": "npm run build && npm run test && cp README.md package.json dist && npm publish dist",
     "build": "rm -rf dist/* && npm run compile && npm run minify",
     "compile": "tsc --outDir dist && rollup -c rollup.config.js",
-    "minify": "babili -o dist/clooney{.min,}.js && babili -o dist/clooney.bundle{.min,}.js"
+    "minify": "cat licenseheader.txt > dist/clooney.min.js && babel-minify --mangle dist/clooney.js >> dist/clooney.min.js && cat licenseheader.txt > dist/clooney.bundle.min.js && babel-minify --mangle dist/clooney.bundle.js >> dist/clooney.bundle.min.js"
   },
   "keywords": [],
   "author": {
@@ -29,7 +29,7 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
-    "babili": "0.1.4",
+    "babel-minify": "^0.3.0",
     "chai": "4.1.2",
     "comlinkjs": "^2.3.2",
     "eslint": "4.13.1",
