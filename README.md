@@ -63,7 +63,7 @@ class MyActor {
 }
 
 const actor = await Clooney.spawn(MyActor);
-await actor.callCallback(msg => console.log(msg)); // logs 'ohai'
+await actor.callCallback(Clooney.asRemoteValue(msg => console.log(msg))); // logs 'ohai'
 ```
 
 ## CDN
