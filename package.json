@@ -32,7 +32,7 @@
     "babel-minify": "0.3.0",
     "chai": "4.1.2",
     "comlinkjs": "2.3.2",
-    "eslint": "4.13.1",
+    "eslint": "4.18.1",
     "eslint-config-google": "0.9.1",
     "karma": "1.7.1",
     "karma-chai": "0.1.0",
