@@ -3,7 +3,6 @@ FROM selenium/node-chrome:latest@sha256:9d24461f5ff07fda0e5b293dfd4b11a8968d2ce4
 USER root
 
 RUN apt-get update -qqy \
-  && apt-get -qqy install nodejs npm \
   && rm -rf /var/lib/apt/lists/* /var/cache/apt/* \
   && rm /bin/sh && ln -s /bin/bash /bin/sh \
   && chown seluser /usr/local
