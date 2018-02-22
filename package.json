@@ -41,7 +41,7 @@
     "mocha": "4.1.0",
     "rollup": "0.56.0",
     "rollup-plugin-alias": "1.4.0",
-    "typescript": "2.6.2",
+    "typescript": "2.7.2",
     "typescript-eslint-parser": "11.0.0"
   }
 }
