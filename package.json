@@ -42,6 +42,6 @@
     "rollup": "0.56.2",
     "rollup-plugin-alias": "1.4.0",
     "typescript": "2.7.2",
-    "typescript-eslint-parser": "11.0.0"
+    "typescript-eslint-parser": "14.0.0"
   }
 }
