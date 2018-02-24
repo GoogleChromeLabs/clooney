@@ -22,6 +22,32 @@ An example says more than 1000 words:
 </script>
 ```
 
+## Events and Functions
+Functions and events are not transferable (i.e. can’t be sent from to a worker), but Clooney has special handling for them:
+
+```js
+class MyRemoteClass {
+  onClick(remoteEvent) {
+    // … react to click …
+  }
+}
+
+const instance = await Clooney.spawn(MyRemoteClass);
+const button = document.querySelector('button');
+button.addEventListener('click', instance.onClick.bind(instance));
+```
+
+The `remoteEvent` object is a mangled version of the original event to make it transferable:
+
+```js
+const remoteEvent = {
+  targetId, // = event.target.id
+  targetClassList, // = [...event.target.classList]
+  detail, // = event.detail
+  data // = event.data
+};
+```
+
 ## API
 Clooney’s job is to take _actors_ (class definitions) and _spawn_ those actors in _containers_ ([Web Workers][Web Worker]). You can use that instance as if it was a local instance (this is magic provided by [Comlink]).
 
@@ -55,18 +81,7 @@ export interface Strategy {
 
 ### `Clooney.asRemoteValue(obj)`
 
-`asRemoteValue` marks a value. If a marked value is used as an parameter or return value, it will not be transferred but instead proxied. This is necessary, for example, for callbacks.
-
-```js
-class MyActor {
-  async callCallback(cb) {
-    await cb('ohai');
-  }
-}
-
-const actor = await Clooney.spawn(MyActor);
-await actor.callCallback(Clooney.asRemoteValue(msg => console.log(msg))); // logs 'ohai'
-```
+`asRemoteValue` marks a value. If a marked value is used as an parameter or return value, it will not be transferred but instead proxied.
 
 ## CDN
 If you want to use Clooney from a CDN, you need to work around the same-origin restrictions that workers have:
