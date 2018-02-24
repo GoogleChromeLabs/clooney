@@ -1,6 +1,8 @@
 # Clooney
 Clooney is an actor (ayooo) library for the web. Classes given to Clooney will be instantiated and run in a worker, keeping the main thread responsive.
 
+> ⚠️ **Caveat:** the class you spawn cannot rely on its surrounding scope, since it is executed in an isolated context.
+
 ## Quickstart
 An example says more than 1000 words:
 
