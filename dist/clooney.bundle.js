@@ -339,6 +339,37 @@ const Comlink = (function () {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// Automatically proxy functions
+Comlink.transferHandlers.set('FUNCTION', {
+    canHandle(obj) {
+        return obj instanceof Function;
+    },
+    serialize(obj) {
+        const { port1, port2 } = new MessageChannel();
+        Comlink.expose(obj, port1);
+        return port2;
+    },
+    deserialize(obj) {
+        return Comlink.proxy(obj);
+    },
+});
+// Automatically proxy events
+Comlink.transferHandlers.set('EVENT', {
+    canHandle(obj) {
+        return obj instanceof Event;
+    },
+    serialize(obj) {
+        return {
+            targetId: obj && obj.target && obj.target.id,
+            targetClassList: obj && obj.target && obj.target.classList && [...obj.target.classList],
+            detail: obj && obj.detail,
+            data: obj && obj.data,
+        };
+    },
+    deserialize(obj) {
+        return obj;
+    },
+});
 /**
  * `asRemoteValue` marks a value. If a marked value is used as an parameter or return value, it will not be transferred but instead proxied.
  */

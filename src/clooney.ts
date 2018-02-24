@@ -12,6 +12,39 @@
  */
 import {Comlink, Endpoint} from 'comlink'; // eslint-disable-line no-unused-vars
 
+// Automatically proxy functions
+Comlink.transferHandlers.set('FUNCTION', {
+  canHandle(obj: any): Boolean {
+    return obj instanceof Function;
+  },
+  serialize(obj: any): any {
+    const {port1, port2} = new MessageChannel();
+    Comlink.expose(obj, port1);
+    return port2;
+  },
+  deserialize(obj: any): any {
+    return Comlink.proxy(obj as Endpoint);
+  },
+});
+
+// Automatically proxy events
+Comlink.transferHandlers.set('EVENT', {
+  canHandle(obj: any): Boolean {
+    return obj instanceof Event;
+  },
+  serialize(obj: any): any {
+    return {
+      targetId: obj && obj.target && obj.target.id,
+      targetClassList: obj && obj.target && obj.target.classList && [...obj.target.classList],
+      detail: obj && obj.detail,
+      data: obj && obj.data,
+    };
+  },
+  deserialize(obj: any): any {
+    return obj;
+  },
+});
+
 export {Comlink} from 'comlink';
 
 /**
