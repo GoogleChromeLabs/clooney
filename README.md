@@ -22,6 +22,8 @@ An example says more than 1000 words:
 </script>
 ```
 
+I’m collecting more examples of Clooney in action in [this Glitch](https://clooney-examples.glitch.me/).
+
 ## Events and Functions
 Functions and events are not transferable (i.e. can’t be sent from to a worker), but Clooney has special handling for them:
 
