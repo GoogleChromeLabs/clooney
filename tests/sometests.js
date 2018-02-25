@@ -111,6 +111,22 @@ describe('Clooney', function () {
       });
   });
 
+  it('can pass objects with functions to the constructor of an actor', function (done) {
+    class MyActor {
+      constructor(obj) {
+        obj.getThing();
+      }
+    }
+
+    const obj = {
+      getThing() {
+        done();
+      }
+    };
+
+    Clooney.spawn(MyActor, [obj])
+  });
+
   describe('RoundRobinStrategy', function () {
     beforeEach(async function () {
       this.strategy = new Clooney.RoundRobinStrategy({
