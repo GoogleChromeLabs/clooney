@@ -51,8 +51,8 @@ const remoteEvent = {
 ## API
 Clooney’s job is to take _actors_ (class definitions) and _spawn_ those actors in _containers_ ([Web Workers][Web Worker]). You can use that instance as if it was a local instance (this is magic provided by [Comlink]).
 
-### `Clooney.spawn(class)`
-This call is equivalent to `Clooney.defaultStrategy.spawn(class)`. Clooney creates an instance of `RoundRobinStrategy` as the default strategy.
+### `Clooney.spawn(class, constructorArgs)`
+This call is equivalent to `Clooney.defaultStrategy.spawn(class, constructorArgs)`. Clooney creates an instance of `RoundRobinStrategy` as the default strategy.
 
 ### Strategies
 Strategies decide how many containers are spun up and where a new instance is created.
@@ -63,7 +63,7 @@ export interface Strategy {
    * `spawn` instantiates the given actor in an actor container of the strategy’s choice.
    * @returns The return type is the type as T, but every method is implicitly async.
    */
-  spawn<T>(actor: new () => T, opts: Object): Promise<T>;
+  spawn<T>(actor: new () => T, constructorArgs: any[], opts: Object): Promise<T>;
   /**
    * `terminate` calls `terminate()` on all existing containers of the strategy.
    */

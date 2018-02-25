@@ -96,6 +96,21 @@ describe('Clooney', function () {
       });
   });
 
+  it('can pass arguments to the constructor of an actor', function () {
+    class MyActor {
+      constructor(_number, _string) {
+        this.number = _number;
+        this.string = _string;
+      }
+    }
+
+    return Clooney.spawn(MyActor, [42, 'hai'])
+      .then(async actor => {
+        expect(await actor.number).to.equal(42);
+        expect(await actor.string).to.equal('hai');
+      });
+  });
+
   describe('RoundRobinStrategy', function () {
     beforeEach(async function () {
       this.strategy = new Clooney.RoundRobinStrategy({

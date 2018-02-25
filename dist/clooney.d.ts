@@ -37,7 +37,7 @@ export interface Strategy {
      * `spawn` instantiates the given actor in an actor container of the strategy’s choice.
      * @returns The return type is the type as T, but every method is implicitly async.
      */
-    spawn<T>(actor: new () => T, opts: Object): Promise<T>;
+    spawn<T>(actor: new () => T, args: any[], opts: Object): Promise<T>;
     /**
      * `terminate` calls `terminate()` on all existing containers of the strategy.
      */
@@ -67,10 +67,10 @@ export declare class RoundRobinStrategy implements Strategy {
     constructor(opts?: StrategyOptions);
     private _initOrGetContainer(i);
     private _getNextContainer(opts);
-    spawn<T>(actor: Actor, opts?: Object): Promise<T>;
+    spawn<T>(actor: Actor, constructorArgs?: any[], opts?: Object): Promise<T>;
     terminate(): Promise<void>;
     readonly terminated: boolean;
 }
 export declare let defaultStrategy: RoundRobinStrategy;
-export declare function spawn<T>(actor: Actor, opts?: Object): Promise<T>;
+export declare function spawn<T>(actor: Actor, constructorArgs?: any[], opts?: Object): Promise<T>;
 export declare function makeContainer(endpoint?: Endpoint | Window): void;

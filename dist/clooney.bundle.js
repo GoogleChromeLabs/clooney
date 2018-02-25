@@ -409,9 +409,9 @@ class RoundRobinStrategy {
         this._nextIndex = (this._nextIndex + 1) % this._options.maxNumContainers;
         return w;
     }
-    async spawn(actor, opts = {}) {
+    async spawn(actor, constructorArgs = [], opts = {}) {
         const container = await this._getNextContainer(opts);
-        return await container.spawn(actor.toString(), opts);
+        return await container.spawn(actor.toString(), constructorArgs);
     }
     async terminate() {
         this._containers.filter(c => c).forEach(container => container.terminate());
@@ -422,14 +422,14 @@ class RoundRobinStrategy {
     }
 }
 let defaultStrategy = new RoundRobinStrategy();
-async function spawn(actor, opts = {}) {
-    return defaultStrategy.spawn(actor, opts);
+async function spawn(actor, constructorArgs = [], opts = {}) {
+    return defaultStrategy.spawn(actor, constructorArgs, opts);
 }
 function makeContainer(endpoint = self) {
     Comlink.expose({
-        async spawn(actorCode) {
+        async spawn(actorCode, constructorArgs) {
             const actor = (new Function(`return ${actorCode};`))();
-            return Comlink.proxyValue(new actor()); // eslint-disable-line new-cap
+            return Comlink.proxyValue(new actor(...constructorArgs)); // eslint-disable-line new-cap
         },
     }, endpoint);
 }
