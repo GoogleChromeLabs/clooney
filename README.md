@@ -1,7 +1,7 @@
 # Clooney
 Clooney is an actor (ayooo) library for the web. Classes given to Clooney will be instantiated and run in a worker, keeping the main thread responsive.
 
-> ⚠️ **Caveat:** the class you spawn cannot rely on its surrounding scope, since it is executed in an isolated context.
+> ⚠️ **Caveat:** The class cannot rely on its surrounding scope, since it is executed in an isolated context. This might change once workers support ES6 modules.
 
 ## Quickstart
 An example says more than 1000 words:
@@ -46,6 +46,20 @@ const remoteEvent = {
   detail, // = event.detail
   data // = event.data
 };
+```
+
+## Promises and async methods
+Clooney handles promises (and therefore, async methods) automatically:
+
+```js
+class Actor {
+  timeoutThing() {
+    return new Promise(resolve => setTimeout(_ => resolve('ohai'), 1000));
+  }
+}
+
+const instance = await strategy.spawn(Actor);
+alert(await instance.timeoutThing()); // Will alert() after 1 second
 ```
 
 ## API
