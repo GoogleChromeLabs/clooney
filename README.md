@@ -88,7 +88,7 @@ export interface Strategy {
 ```
 
 #### `Clooney.RoundRobinStrategy(opts)`
-`RoundRobingStrategy` creates up to n containers and cycles through the containers with every `spawn` call. `RoundRobinStrategy` is the default strategy.
+`RoundRobinStrategy` creates up to n containers and cycles through the containers with every `spawn` call. `RoundRobinStrategy` is the default strategy.
 
 ### Strategy Options
 
