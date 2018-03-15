@@ -39,7 +39,7 @@
     "karma-chrome-launcher": "2.2.0",
     "karma-mocha": "1.3.0",
     "mocha": "5.0.4",
-    "rollup": "0.56.5",
+    "rollup": "0.57.0",
     "rollup-plugin-alias": "1.4.0",
     "typescript": "2.7.2",
     "typescript-eslint-parser": "14.0.0"
