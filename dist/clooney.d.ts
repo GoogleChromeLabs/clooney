@@ -10,8 +10,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Endpoint } from 'comlink';
-export { Comlink } from 'comlink';
+import { Endpoint } from 'comlinkjs';
+export { Comlink } from 'comlinkjs';
 /**
  * `asRemoteValue` marks a value. If a marked value is used as an parameter or return value, it will not be transferred but instead proxied.
  */

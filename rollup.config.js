@@ -23,7 +23,7 @@ export default {
   },
   plugins: [
     alias({
-      'comlink': 'node_modules/comlinkjs/comlink.es6.js',
+      'comlinkjs': 'node_modules/comlinkjs/comlink.es6.js',
     }),
   ],
 };

@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Comlink, Endpoint} from 'comlink'; // eslint-disable-line no-unused-vars
+import {Comlink, Endpoint} from 'comlinkjs'; // eslint-disable-line no-unused-vars
 
 // Automatically proxy functions
 Comlink.transferHandlers.set('FUNCTION', {
@@ -45,7 +45,7 @@ Comlink.transferHandlers.set('EVENT', {
   },
 });
 
-export {Comlink} from 'comlink';
+export {Comlink} from 'comlinkjs';
 
 /**
  * `asRemoteValue` marks a value. If a marked value is used as an parameter or return value, it will not be transferred but instead proxied.
