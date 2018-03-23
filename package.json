@@ -28,10 +28,12 @@
     }
   ],
   "license": "Apache-2.0",
+  "dependencies": {
+    "comlinkjs": "2.3.5"
+  },
   "devDependencies": {
     "babel-minify": "0.3.0",
     "chai": "4.1.2",
-    "comlinkjs": "2.3.5",
     "eslint": "4.19.1",
     "eslint-config-google": "0.9.1",
     "karma": "2.0.0",
