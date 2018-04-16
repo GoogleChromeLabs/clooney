@@ -8,7 +8,7 @@
   "scripts": {
     "test": "npm run linter && npm run build && npm run unittest",
     "unittest": "karma start",
-    "linter": "eslint src/clooney.ts",
+    "linter": "prettier --write src/*.ts tests/*.js tests/fixtures/*.js",
     "watchtest": "karma start --no-single-run --browsers ChromeHeadless",
     "version": "sed -i.bak -e 's!clooneyjs@[0-9.]*!clooneyjs@'${npm_package_version}'!' README.md && git add README.md",
     "mypublish": "npm run build && npm run test && cp README.md package.json dist && npm publish dist",
@@ -34,8 +34,6 @@
   "devDependencies": {
     "babel-minify": "0.4.0",
     "chai": "4.1.2",
-    "eslint": "4.19.1",
-    "eslint-config-google": "0.9.1",
     "karma": "2.0.0",
     "karma-chai": "0.1.0",
     "karma-chrome-launcher": "2.2.0",
@@ -44,6 +42,6 @@
     "rollup": "0.57.1",
     "rollup-plugin-alias": "1.4.0",
     "typescript": "2.8.1",
-    "typescript-eslint-parser": "14.0.0"
+    "prettier": "^1.12.0"
   }
 }

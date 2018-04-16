@@ -11,9 +11,12 @@
  * limitations under the License.
  */
 
-importScripts('/base/node_modules/comlinkjs/comlink.global.js');
-Comlink.expose({
-  spawn() {
-    return 42;
-  }
-}, self);
+importScripts("/base/node_modules/comlinkjs/comlink.global.js");
+Comlink.expose(
+  {
+    spawn() {
+      return 42;
+    }
+  },
+  self
+);
