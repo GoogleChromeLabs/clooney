@@ -11,7 +11,7 @@
     "linter": "prettier --write src/*.ts tests/*.js tests/fixtures/*.js",
     "watchtest": "karma start --no-single-run --browsers ChromeHeadless",
     "version": "sed -i.bak -e 's!clooneyjs@[0-9.]*!clooneyjs@'${npm_package_version}'!' README.md && git add README.md",
-    "mypublish": "npm run build && npm run test && cp README.md package.json dist && npm publish dist && sed -i.bak -e 's!\"comlinkjs\"!\"comlink\"!' dist/package.json && npm publish dist",
+    "mypublish": "npm run build && npm run test && cp README.md package.json dist && npm publish dist && sed -i.bak -e 's!\"clooneyjs\"!\"clooney\"!' dist/package.json && npm publish dist",
     "build": "rm -rf dist/* && npm run compile && npm run minify",
     "compile": "tsc --outDir dist && rollup -c rollup.config.js",
     "minify": "cat licenseheader.txt > dist/clooney.min.js && babel-minify --mangle dist/clooney.js >> dist/clooney.min.js && cat licenseheader.txt > dist/clooney.bundle.min.js && babel-minify --mangle dist/clooney.bundle.js >> dist/clooney.bundle.min.js"
