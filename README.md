@@ -103,7 +103,7 @@ export interface Strategy {
 If you want to use Clooney from a CDN, you need to work around the same-origin restrictions that workers have:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/clooneyjs@0.6.4/clooney.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clooneyjs@0.6.5/clooney.bundle.min.js"></script>
 <script>
   async function newWorkerFunc() {
     const blob = await fetch(Clooney.defaultWorkerSrc).then(resp => resp.blob())
