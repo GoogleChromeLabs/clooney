@@ -1,6 +1,6 @@
 {
   "name": "clooneyjs",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "Clooney is an actor library for the web",
   "main": "clooney.js",
   "module": "clooney.js",
