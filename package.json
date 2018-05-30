@@ -42,6 +42,6 @@
     "rollup": "0.59.4",
     "rollup-plugin-alias": "1.4.0",
     "typescript": "2.8.3",
-    "prettier": "1.13.2"
+    "prettier": "1.13.3"
   }
 }
