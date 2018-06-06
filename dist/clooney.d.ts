@@ -65,8 +65,8 @@ export declare class RoundRobinStrategy implements Strategy {
     private _nextIndex;
     private _options;
     constructor(opts?: StrategyOptions);
-    private _initOrGetContainer(i);
-    private _getNextContainer(opts);
+    private _initOrGetContainer;
+    private _getNextContainer;
     spawn<T>(actor: Actor, constructorArgs?: any[], opts?: Object): Promise<T>;
     terminate(): Promise<void>;
     readonly terminated: boolean;

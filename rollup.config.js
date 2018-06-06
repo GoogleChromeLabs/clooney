@@ -19,7 +19,7 @@ export default {
     file: 'dist/clooney.bundle.js',
     format: 'iife',
     name: 'Clooney',
-    banner: require('fs').readFileSync('licenseheader.txt'),
+    banner: require('fs').readFileSync('licenseheader.txt').toString('utf-8'),
   },
   plugins: [
     alias({
