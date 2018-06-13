@@ -29,7 +29,7 @@
   ],
   "license": "Apache-2.0",
   "dependencies": {
-    "comlinkjs": "2.4.1"
+    "comlinkjs": "3.0.1"
   },
   "devDependencies": {
     "babel-minify": "0.4.0",
