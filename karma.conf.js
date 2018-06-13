@@ -16,8 +16,7 @@ module.exports = function(config) {
       basePath: '',
       frameworks: ['mocha', 'chai'],
       files: [
-        'node_modules/comlinkjs/comlink.global.js',
-        'dist/clooney.bundle.js',
+        'dist/bundle/clooney.js',
         'tests/sometests.js',
         {
           pattern: 'tests/fixtures/**',

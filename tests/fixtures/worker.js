@@ -11,7 +11,7 @@
  * limitations under the License.
  */
 
-importScripts("/base/node_modules/comlinkjs/comlink.global.js");
+importScripts("/base/node_modules/comlinkjs/umd/comlink.js");
 Comlink.expose(
   {
     spawn() {
