@@ -11,19 +11,17 @@
  * limitations under the License.
  */
 
-import alias from 'rollup-plugin-alias';
+const nodeResolve = require('rollup-plugin-node-resolve');
 
 export default {
   input: 'dist/clooney.js',
   output: {
-    file: 'dist/clooney.bundle.js',
+    file: 'dist/bundle/clooney.js',
     format: 'iife',
     name: 'Clooney',
     banner: require('fs').readFileSync('licenseheader.txt').toString('utf-8'),
   },
   plugins: [
-    alias({
-      'comlinkjs': 'node_modules/comlinkjs/comlink.es6.js',
-    }),
+    nodeResolve()
   ],
 };
