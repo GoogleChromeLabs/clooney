@@ -38,7 +38,7 @@
     "karma-mocha": "1.3.0",
     "mocha": "5.2.0",
     "prettier": "1.13.6",
-    "rollup": "0.61.2",
+    "rollup": "0.62.0",
     "rollup-plugin-node-resolve": "3.3.0",
     "typescript": "2.9.2"
   }
