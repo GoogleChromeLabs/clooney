@@ -39,7 +39,7 @@
     "mocha": "5.2.0",
     "prettier": "1.14.2",
     "rollup": "0.65.0",
-    "rollup-plugin-node-resolve": "3.3.0",
+    "rollup-plugin-node-resolve": "3.4.0",
     "typescript": "3.0.3"
   }
 }
