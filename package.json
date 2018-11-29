@@ -40,6 +40,6 @@
     "prettier": "1.15.2",
     "rollup": "0.67.3",
     "rollup-plugin-node-resolve": "3.4.0",
-    "typescript": "3.1.6"
+    "typescript": "3.2.1"
   }
 }
