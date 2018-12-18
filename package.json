@@ -5,6 +5,10 @@
   "main": "clooney.js",
   "module": "clooney.js",
   "typings": "clooney.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GoogleChromeLabs/clooney"
+  },
   "scripts": {
     "test": "npm run linter && npm run build && npm run unittest",
     "unittest": "karma start",
