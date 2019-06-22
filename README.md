@@ -24,6 +24,19 @@ An example says more than 1000 words:
 
 I’m collecting more examples of Clooney in action in [this Glitch](https://clooney-examples.glitch.me/).
 
+## Browser support
+
+Clooney uses [Comlink] under the hood, and so inherits its browser compatibility matrix.
+
+![Chrome 56+](https://img.shields.io/badge/Chrome-56+-green.svg?style=flat-square)
+![Edge 15+](https://img.shields.io/badge/Edge-15+-green.svg?style=flat-square)
+![Firefox 52+](https://img.shields.io/badge/Firefox-52+-green.svg?style=flat-square)
+![Opera 43+](https://img.shields.io/badge/Opera-43+-green.svg?style=flat-square)
+![Safari 10.1+](https://img.shields.io/badge/Safari-10.1+-green.svg?style=flat-square)
+![Samsung Internet 6.0+](https://img.shields.io/badge/Samsung_Internet-6.0+-green.svg?style=flat-square)
+
+Browsers without [ES6 Proxy] support can use the [proxy-polyfill].
+
 ## Events and Functions
 Functions and events are not transferable (i.e. can’t be sent from to a worker), but Clooney has special handling for them:
 
@@ -117,6 +130,8 @@ If you want to use Clooney from a CDN, you need to work around the same-origin r
 
 [Comlink]: https://github.com/GoogleChromeLabs/comlink
 [Web Worker]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API
+[es6 proxy]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
+[proxy-polyfill]: https://github.com/GoogleChrome/proxy-polyfill
 
 ---
 License Apache-2.0
