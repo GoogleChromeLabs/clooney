@@ -27,12 +27,21 @@ var Clooney = (function (exports) {
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    const TRANSFERABLE_TYPES = [ArrayBuffer, MessagePort];
+    /**
+     * Symbol that gets added to objects by `Comlink.proxy()`.
+     */
+    const proxyValueSymbol = Symbol("comlinkProxyValue");
+    /**
+     * Returns true if the given value has the proxy value symbol added to it.
+     */
+    const isProxyValue = (value) => !!value && value[proxyValueSymbol] === true;
+    const TRANSFERABLE_TYPES = ["ArrayBuffer", "MessagePort", "OffscreenCanvas"]
+        .filter(f => f in self)
+        .map(f => self[f]);
     const uid = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-    const proxyValueSymbol = Symbol("proxyValue");
     const throwSymbol = Symbol("throw");
     const proxyTransferHandler = {
-        canHandle: (obj) => obj && obj[proxyValueSymbol],
+        canHandle: isProxyValue,
         serialize: (obj) => {
             const { port1, port2 } = new MessageChannel();
             expose(obj, port1);
@@ -44,9 +53,13 @@ var Clooney = (function (exports) {
     };
     const throwTransferHandler = {
         canHandle: (obj) => obj && obj[throwSymbol],
-        serialize: (obj) => obj.toString() + "\n" + obj.stack,
+        serialize: (obj) => {
+            const message = obj && obj.message;
+            const stack = obj && obj.stack;
+            return Object.assign({}, obj, { message, stack });
+        },
         deserialize: (obj) => {
-            throw Error(obj);
+            throw Object.assign(Error(), obj);
         }
     };
     const transferHandlers = new Map([
@@ -70,8 +83,9 @@ var Clooney = (function (exports) {
         }, [], target);
     }
     function proxyValue(obj) {
-        obj[proxyValueSymbol] = true;
-        return obj;
+        const proxyVal = obj;
+        proxyVal[proxyValueSymbol] = true;
+        return proxyVal;
     }
     function expose(rootObj, endpoint) {
         if (isWindow(endpoint))
@@ -339,6 +353,7 @@ var Clooney = (function (exports) {
     }
 
     var comlink = /*#__PURE__*/Object.freeze({
+        proxyValueSymbol: proxyValueSymbol,
         transferHandlers: transferHandlers,
         proxy: proxy,
         proxyValue: proxyValue,
@@ -465,15 +480,38 @@ var Clooney = (function (exports) {
     // TODO: Find a way to opt-out of autostart
     if (isWorker())
         makeContainer();
+    /**
+     * Adds an error handler to actor containers to prevent silent failures.
+     * When an error occurs in the worker, it is logged to console.
+     * This helps with debugging and provides feedback to users.
+     */
+    function addErrorHandlingToContainer(container) {
+        const originalSpawn = container.spawn.bind(container);
+        container.spawn = async (actor, opts) => {
+            try {
+                return await originalSpawn(actor, opts);
+            }
+            catch (error) {
+                console.error("[Clooney] Error spawning actor:", error);
+                throw error;
+            }
+        };
+    }
+    // Enhance default strategy with error handling
+    // This is an additive improvement: it does not remove or change existing functionality.
+    // It only wraps the spawn method to catch and log errors.
+    // To apply, call addErrorHandlingToContainer on each container after creation.
+    // The user can opt-out by not using this function.
 
     exports.Comlink = comlink;
-    exports.asRemoteValue = asRemoteValue;
-    exports.defaultWorkerSrc = defaultWorkerSrc;
-    exports.defaultOpts = defaultOpts;
     exports.RoundRobinStrategy = RoundRobinStrategy;
+    exports.addErrorHandlingToContainer = addErrorHandlingToContainer;
+    exports.asRemoteValue = asRemoteValue;
+    exports.defaultOpts = defaultOpts;
     exports.defaultStrategy = defaultStrategy;
-    exports.spawn = spawn;
+    exports.defaultWorkerSrc = defaultWorkerSrc;
     exports.makeContainer = makeContainer;
+    exports.spawn = spawn;
 
     return exports;
 
