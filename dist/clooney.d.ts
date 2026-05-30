@@ -75,3 +75,9 @@ export declare class RoundRobinStrategy implements Strategy {
 export declare let defaultStrategy: RoundRobinStrategy;
 export declare function spawn<T>(actor: Actor, constructorArgs?: any[], opts?: Object): Promise<T>;
 export declare function makeContainer(endpoint?: Endpoint | Window): void;
+/**
+ * Adds an error handler to actor containers to prevent silent failures.
+ * When an error occurs in the worker, it is logged to console.
+ * This helps with debugging and provides feedback to users.
+ */
+export declare function addErrorHandlingToContainer(container: ActorContainer): void;
